@@ -33,13 +33,14 @@ class LandingController extends Controller
             $data = $request -> all();
 
             $data[ 'password' ] = bcrypt( $data[ 'password' ] );
+            $data[ 'role' ] = 'ADMIN_ROLE';
 
-            $data = User :: create( $data );
+            $user = User :: create( $data );
 
             $output = [
                 'status' => 201,
                 'msg' => 'Successful operation.',
-                'data' => $data,
+                'data' => $user,
             ];
             
         } //end try 

@@ -14,7 +14,7 @@ class ShieldController extends Controller
 
     private const CLIENT_ID = 2;
 	
-	private const CLIENT_SECRET = 'Wnj5CI5JuaEtA5nMmkVmPSLCw7JuVrnUCUztL1be';
+	private const CLIENT_SECRET = '6erdDspjtccAX7681cxJBnqKRMtqFr551VOcxUjv';
     
     /**
      * Display a listing of the resource.
@@ -39,13 +39,6 @@ class ShieldController extends Controller
             
             $data = ( object ) $request -> all();
 
-            /**TODO:
-             * Segmentar en más métodos la funcion de obtener el token
-             * Faltan validaciones, si existe el usuario 
-             * Hacerun middleware para que obtenga el token 
-             * 
-            */
-
             $userExist = User::where( 'email', $data -> email ) -> first();
 
             if( $userExist ){
@@ -61,16 +54,16 @@ class ShieldController extends Controller
                 ] );
      
                 $output = [
-                    'data' => $response->json(),
-                    'message' => 'Hola Mundo login',
                     'status' => 200, 
+                    'msg' => 'Successful operation.',
+                    'data' => $response->json(),
                 ];
             } //end if
             else {
 
                 $output = [
-                    'msg' => 'No existe el usuario',
                     'status' => 400, 
+                    'msg' => 'No existe el usuario',
                 ];
             } //end else
 

@@ -8,8 +8,6 @@ use App\Http\Controllers\API\ShieldController;
 use App\Http\Controllers\API\LandingController;
 use App\Http\Controllers\API\UserController;
 
-//Middleware
-use App\Http\Middleware\ValidateField;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,24 +21,21 @@ use App\Http\Middleware\ValidateField;
 */
 
 Route :: group( [ 
-	'prefix' => 'v1',
+	'prefix' => 'app',
  ], function() {
 
-	Route::post( 'app/signin', [ LandingController::class, 'store' ] ) 
-		-> middleware( [ 'verify.fields:signIn' ] );
+	Route :: middleware( [ 'verify.fields:signIn' ] ) 
+		-> post( '/signin', [ LandingController::class, 'store' ] );
 
-	Route::post( 'app/login', [ ShieldController::class, 'app' ] )
-		-> middleware( [ 'verify.fields:login' ] );
+	Route :: middleware( [ 'verify.fields:login' ] )
+		-> post( '/login', [ ShieldController::class, 'app' ] );
+		
+	Route :: middleware ( [ 'auth:api' ] ) 
+		-> group( function(){
 
-	Route :: group(  [
-		'middleware' => 'auth:api',
-		'prefix' => 'app',
-	], function(){
-
-		Route::apiResources( [ 	
-			'user' => UserController::class 
-		] );
-
+			Route::apiResources( [ 	
+				'user' => UserController::class 
+			] ) ;
 	} );
 
 } );

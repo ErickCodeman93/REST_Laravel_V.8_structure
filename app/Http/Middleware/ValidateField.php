@@ -18,15 +18,31 @@ class ValidateField
      */
     public function handle( Request $request, Closure $next, $type )
     {   
-        $validates = [
-            'email'				=>	'required',
-            'password'			=>	'required',
-        ];
+        if( $type === 'login' ){
+
+            $validates = [
+                'email'				=>	'required',
+                'password'			=>	'required',
+            ];
+        } //end if
 
         if( $type === 'signIn' ){
 
-            $validates[ 'name' ] =	'required';
-            $validates[ 'email' ] =	'required|email|unique:users,email';
+            $validates = [
+                'name'              =>  'required',
+                'email'				=>	'required|email|unique:users,email',
+                'password'			=>	'required',
+            ];
+        } //end if
+
+        if( $type === 'user' ){
+
+            $validates = [
+                'name'              =>  'required',
+                'email'				=>	'required|email|unique:users,email',
+                'password'			=>	'required',
+                'role'			    =>	'in:ADMIN_ROLE,VENTAS_ROLE,USER_ROLE',
+            ];
         } //end if
 
         $errors = check( $request -> all(), $validates );
@@ -34,8 +50,9 @@ class ValidateField
         if( ! is_null( $errors ) ){
 
             return response( [
-                        'msg' => $errors[ 'msg' ],
-                        'field'=> $errors[ 'key' ],
+                        'status' => 400,
+                        'field' => $errors[ 'key' ],
+                        'msg'   => $errors[ 'msg' ],
                     ], 400 );
 
         } //end if
