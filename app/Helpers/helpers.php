@@ -1,6 +1,4 @@
 <?php
-use Exception;
-use Validator;
 
 function check( array $request = [], array $validations = [] ){
 

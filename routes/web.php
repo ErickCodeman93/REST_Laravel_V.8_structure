@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ * TODO:
+ * Investigar como proteger rutas web
+ */
+
 Route::get('/', function () {
     return view('welcome');
 });

@@ -37,19 +37,19 @@ class LandingController extends Controller
             $data = User :: create( $data );
 
             $output = [
+                'status' => 201,
                 'msg' => 'Successful operation.',
                 'data' => $data,
-                'status' => 201,
             ];
             
         } //end try 
         catch ( Exception $error ) {
             
             $output = [ 
+                'status' => 500, 
                 'line' => $error -> getLine(),
 			    'message'  => $error -> getMessage(),
 			    'code'  => $error -> getCode(),
-                'status' => 500, 
             ];
 
         } //end try

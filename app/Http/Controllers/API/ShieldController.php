@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp;
+use App\Models\User;
 
 class ShieldController extends Controller
 {
 
     private const CLIENT_ID = 2;
 	
-	private const CLIENT_SECRET = 'F28SPIDjjvKRIDD6D3iKq6CuLur5LgdcxRPAK9he';
+	private const CLIENT_SECRET = 'Wnj5CI5JuaEtA5nMmkVmPSLCw7JuVrnUCUztL1be';
     
     /**
      * Display a listing of the resource.
@@ -27,42 +28,66 @@ class ShieldController extends Controller
 
     public function app( Request $request )
     {   
-        $data = ( object ) $request -> all();
-
-        /**TODO:
-         * Segmentar en más métodos la funcion de obtener el token
-         * Faltan validaciones, si existe el usuario 
-         * Hacerun middleware para que obtenga el token 
-         * 
-        */
-
-        // $user = Auth :: user();
-
-        // dd( $user );
-
-        // foreach( $user -> tokens ?? [] as $token ) {
-        //     $token -> revoke();
-        // }	// end foreach
-        // unset( $token );
-
-        $response = Http::asForm()->post( 'http://127.0.0.1:8001/oauth/token', 
-        [
-            'grant_type' => 'password',
-            'client_id' => self :: CLIENT_ID,
-            'client_secret' => self :: CLIENT_SECRET,
-            'username' => $data -> email,
-            'password' => $data -> password,
-            'scope' => '*',
-        ] );
-
-       
-        $output = [
-            'data' => $response->json(),
-            'message' => 'Hola Mundo login',
-        ];
-            
-        return response( $output, 200 );
+        return $this -> login( $request );
         
+    } //end method
+
+
+    private function login( Request $request ) {
+
+        try {
+            
+            $data = ( object ) $request -> all();
+
+            /**TODO:
+             * Segmentar en más métodos la funcion de obtener el token
+             * Faltan validaciones, si existe el usuario 
+             * Hacerun middleware para que obtenga el token 
+             * 
+            */
+
+            $userExist = User::where( 'email', $data -> email ) -> first();
+
+            if( $userExist ){
+    
+                $response = Http::asForm()->post( 'http://127.0.0.1:8001/oauth/token', 
+                [
+                    'grant_type' => 'password',
+                    'client_id' => self :: CLIENT_ID,
+                    'client_secret' => self :: CLIENT_SECRET,
+                    'username' => $data -> email,
+                    'password' => $data -> password,
+                    'scope' => '*',
+                ] );
+     
+                $output = [
+                    'data' => $response->json(),
+                    'message' => 'Hola Mundo login',
+                    'status' => 200, 
+                ];
+            } //end if
+            else {
+
+                $output = [
+                    'msg' => 'No existe el usuario',
+                    'status' => 400, 
+                ];
+            } //end else
+
+        } //end try 
+        catch( Exeception $error  ) {
+
+            $output = [ 
+                'line' => $error -> getLine(),
+			    'message'  => $error -> getMessage(),
+			    'code'  => $error -> getCode(),
+                'status' => 500, 
+            ];
+            
+        } //end catch
+      
+        return response( $output, $output[ 'status' ] );
+
     } //end method
 
     /**

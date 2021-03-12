@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 //Controllers
 use App\Http\Controllers\API\ShieldController;
 use App\Http\Controllers\API\LandingController;
+use App\Http\Controllers\API\UserController;
 
 //Middleware
 use App\Http\Middleware\ValidateField;
@@ -21,10 +22,31 @@ use App\Http\Middleware\ValidateField;
 |
 */
 
-Route::post( '/register', [ LandingController::class, 'store' ] ) 
+Route :: group( [ 
+	'prefix' => 'v1',
+ ], function() {
+
+	Route::post( 'app/signin', [ LandingController::class, 'store' ] ) 
 		-> middleware( [ 'verify.fields:signIn' ] );
 
-Route::post( '/login', [ ShieldController::class, 'app' ] )
+	Route::post( 'app/login', [ ShieldController::class, 'app' ] )
 		-> middleware( [ 'verify.fields:login' ] );
+
+	Route :: group(  [
+		'middleware' => 'auth:api',
+		'prefix' => 'app',
+	], function(){
+
+		Route::apiResources( [ 	
+			'user' => UserController::class 
+		] );
+
+	} );
+
+} );
+
+
+
+
 
 //Probar el token que genera el login en algun controllador

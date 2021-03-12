@@ -47,7 +47,7 @@ php artisan migrate
 Crear las llaves necesarias para generar el token en la terminal
 
 ````
-php artisan passport:install
+php artisan passport:install --force
 ````
 
 Guardar Password grant client que te entrega la terminal.
@@ -75,14 +75,30 @@ cambiar de driver => auth a driver => passport:
 
 ## Paso 5
 
-Dentro del archivo que se encuentra en la carperta app -> providers -> AuthServiceProvider.php, agregar  Passport::routes(); dentro de la función boot:
+Dentro del archivo que se encuentra en la carperta app -> providers -> AuthServiceProvider.php, agregar  Passport::routes() y   Passport::enableImplicitGrant() dentro de la función boot y descomentar 'App\Models\Model' => 'App\Policies\ModelPolicy',:
 
 ````
+ /**
+     * The policy mappings for the application.
+     *
+     * @var array
+     */
+    protected $policies = [
+        'App\Models\Model' => 'App\Policies\ModelPolicy',
+    ];
+
+    /**
+     * Register any authentication / authorization services.
+     *
+     * @return void
+     */
  public function boot()
     {
         $this->registerPolicies();
 
         Passport::routes();
+
+        Passport::enableImplicitGrant();
 
         //
     }
@@ -103,6 +119,14 @@ Revisar que las rutas de /oauth/token existan con el siguiente comando
 
 Si existen las rutas entonces estan listas para hacer una petición dentro de un controlador con el siguiente código,
 no olvides guardar en unas constantes el client id y el id secret que entrego el paso 3.
+
+NOTA: Para poder usar el oauth, recordemos que el servidor debe hacer la petición a otro servidor, en este caso, como es localhost, basta con levantar otro servidor pero con diferente puerto para que no rechaze la petición.
+
+El comando para levantar otro servidor es 
+
+````
+php artisan serve --port=8001
+````
 
 ````
   $response = Http::asForm()->post( 'http://127.0.0.1:8001/oauth/token', 
