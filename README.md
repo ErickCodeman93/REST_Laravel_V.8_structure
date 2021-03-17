@@ -8,7 +8,7 @@ Esta es una estructura para una API REST con Laravel V.8 que contiene autenticac
 
 ## Instalación
 
-Paso 1: Clona el repositorio o descarga el [release]().
+Paso 1: Clona el repositorio o descarga el [release](https://github.com/ErickCodeman93/REST_Laravel_v.8_structure/archive/v.1.0.0.zip).
 
 Paso 2: Descarga las dependencias de Composer.
 
