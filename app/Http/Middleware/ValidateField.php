@@ -41,21 +41,19 @@ class ValidateField
                 'name'              =>  'required',
                 'email'				=>	'required|email|unique:users,email',
                 'password'			=>	'required',
-                'role'			    =>	'in:ADMIN_ROLE,VENTAS_ROLE,USER_ROLE',
+                'role_id'			=>	'required|role_custom',
             ];
         } //end if
 
         $errors = check( $request -> all(), $validates );
 
-        if( ! is_null( $errors ) ){
-
+        if( ! is_null( $errors ) )
             return response( [
-                        'status' => 400,
                         'field' => $errors[ 'key' ],
                         'msg'   => $errors[ 'msg' ],
                     ], 400 );
 
-        } //end if
+        // $request -> authenticated_user = auth()->user();
 
         return $next( $request );
     }

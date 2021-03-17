@@ -29,9 +29,13 @@ Route :: group( [
 
 	Route :: middleware( [ 'verify.fields:login' ] )
 		-> post( '/login', [ ShieldController::class, 'app' ] );
+
+
 		
 	Route :: middleware ( [ 'auth:api' ] ) 
 		-> group( function(){
+
+			Route :: post( '/logout', [ ShieldController::class, 'logout' ] );
 
 			Route::apiResources( [ 	
 				'user' => UserController::class 

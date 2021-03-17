@@ -22,6 +22,8 @@ class UserController extends Controller
     {
         //Middlewares
         $this->middleware( 'verify.fields:user' )->only( 'store' );
+        $this->middleware( 'verify.id' )->only( [ 'show', 'update', 'destroy' ] );
+        $this->middleware( 'verify.role' )->only( 'destroy' );
         
     } //end constructor
 
@@ -32,9 +34,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $userCreate = auth()->user();
-
-        $user = User :: all();
+        $user = User :: with( 'role' ) -> get();
 
         $output = [
             'status' => 200,
@@ -56,10 +56,12 @@ class UserController extends Controller
     {   
         try {
 
-            $userCreate = auth()->user();
+            $admin =  $request -> user();
+
             $data = $request -> all();
 
             $data[ 'password' ] = bcrypt( $data[ 'password' ] );
+            $data[ 'role_id' ] = getRole( $data[ 'role_id' ] );
 
             $user = User :: create( $data );
 
@@ -67,6 +69,7 @@ class UserController extends Controller
                 'status' => 201,
                 'msg' => 'Successful operation.',
                 'data' => $user,
+                'admin' => $admin,
             ];
         
         } //end try 
@@ -91,9 +94,17 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show( User $user, $id )
-    {
-        dd( $id );
+    public function show( Request $request, $id )
+    {   
+        $user = User :: with( 'role' ) -> find( $id );
+
+        $output = [
+            'status' => 200,
+            'msg' => 'Successful operation.',
+            'data' => $user,
+        ];
+
+        return response( $output, $output[ 'status' ] );
     } //end method
 
     /**
@@ -103,9 +114,43 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
-    {
-        //
+    public function update( Request $request, $id )
+    {   
+        try {
+            
+            $data = $request -> all();
+            $admin =  $request -> user();
+            $user = User ::find( $id );
+
+            if( isset( $data[ 'password' ] ) && ! is_null( $data[ 'password' ] ) && ! empty( $data[ 'password' ] ) )
+                $data[ 'password' ] = bcrypt( $data[ 'password' ] );
+
+            if( isset( $data[ 'role_id' ] ) && ! is_null( $data[ 'role_id' ] ) && ! empty( $data[ 'role_id' ] ) )    
+                $data[ 'role_id' ] = getRole( $data[ 'role_id' ] );
+
+            $user -> update( $data );
+
+            return $output = [
+                'status' => 200,
+                'msg'   => 'Successful operation.',
+                'data'  => $user,
+                'admin' => $admin
+            ];
+
+        } //end try 
+        catch( Exeception $error  ) {
+
+            $output = [ 
+                'line' => $error -> getLine(),
+                'message'  => $error -> getMessage(),
+                'code'  => $error -> getCode(),
+                'status' => 500, 
+            ];
+            
+        } //end catch
+
+        return response( $output, $output[ 'status' ] );
+
     } //end method
 
     /**
@@ -114,8 +159,34 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy( Request $request, $id )
     {
-        //
+        try {
+
+            $admin =  $request -> user();
+            $user = User ::find( $id );
+
+            $user -> delete();
+
+            return $output = [
+                'status' => 200,
+                'msg'   => 'Successful operation.',
+                'data'  => $user,
+                'admin' => $admin
+            ];
+
+        } //end try 
+        catch( Exeception $error  ) {
+
+            $output = [ 
+                'line' => $error -> getLine(),
+                'message'  => $error -> getMessage(),
+                'code'  => $error -> getCode(),
+                'status' => 500, 
+            ];
+            
+        } //end catch
+
+        return response( $output, $output[ 'status' ] );
     } //end method
 } //end class

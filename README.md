@@ -1,62 +1,209 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Estructura API REST
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Esta es una estructura para una API REST con Laravel V.8 que contiene autenticación con OAUTH 2 para la protección de rutas, middlewares para el mejor manejo de lo que envía el cliente y existencia de registros antes de ser manipulados en controladores, CRUD de modelos, migraciones y semillas.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Instalación
 
-## Learning Laravel
+Paso 1: Clona el repositorio o descarga el [release]().
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Paso 2: Descarga las dependencias de Composer.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+````
+composer install
+````
 
-## Laravel Sponsors
+Paso 3: Ingresa tus accesos de la base de datos en el archivo .env
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Paso 4: Ejecuta una migración con el siguiente comando:
 
-### Premium Partners
+````
+php artisan migrate:fresh --seed 
+````
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/)**
-- **[OP.GG](https://op.gg)**
+Paso 5: Crea las llaves del cliente de passport
 
-## Contributing
+````
+php artisan passport:install --force 
+````
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Guardar la clave que tiene el id 2
+y adicional en el controlador ShieldController dentro de la carpeta API en donde se encuentran los controladores, cambiar el valor de la constante CLIENT_SECRET por la que nos genero el comando anterior.
 
-## Code of Conduct
+````
+private const CLIENT_SECRET = 'iqTo9sLoLM...';
+````
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Nota: La estructura cuenta ya con un usuario y registros de roles en la base de datos con los cuales puedes usar el API.
 
-## Security Vulnerabilities
+## Uso de la Api
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Si realizaste la configuración adecuadamente puedes usar las siguientes credenciales que vienen en las semillas para interactuar con la API:
 
-## License
+user : admin@test.com
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+pass : 12341234
+
+Además de que cuentan con tres roles:
+
+id: 1 - Name: ADMIN_ROLE
+
+id: 2 - Name: VENTAS_ROLE
+
+id: 3 - Name: USER_ROLE
+
+En los headers debe llevar el siguiente valor o no tendras respuesta del API
+
+````
+Accept : application/json
+````
+
+Las rutas para interactuar con el API son las siguientes:
+
+## - Login
+
+Método: POST
+
+````
+{{ localhost o dominio }}/api/app/login
+````
+data a enviar: 
+````
+{
+	"email" : "admin@test.com",
+	"password : "12341234",
+}
+````
+
+Esta ruta te devolverá un access_token el cual debes guardar para usar en los siguientes endpoints.
+
+Nota: Los siguientes endpoints necesitas estar autenticado, para poderlos usarlos, además de enviar el siguiente valor en los headers en todas las peticiones a estos endpoints.
+
+````
+Authorization : Bearer eyJ0eXAiOi... ( este es el access_token que devuelve el login )
+````
+
+Obtiene todos los usuarios
+
+Método: GET 
+
+````
+{{ localhost o dominio }}/api/app/user
+````
+
+Creación de usuarios 
+
+Método: POST
+
+````
+{{ localhost o dominio }}/api/app/user
+````
+
+data a enviar: 
+
+````
+{
+    "name" : "user1",
+    "email" : "user1@test.com",
+    "password" : "12341234",
+    "role_id" : ( puedes enviar el id o nombre )
+}
+````
+
+Obtiene usuarios por id
+
+Método: GET
+
+````
+{{ localhost o dominio }}/api/app/user/2
+````
+
+Edita usuarios por id
+
+Método: PUT
+
+````
+{{ localhost o dominio }}/api/app/user/2
+````
+
+data a enviar ( opcional ): 
+
+````
+{
+    "name" : "user1",
+    "email" : "user1@test.com",
+    "password" : "12341234",
+    "role_id" : ( puedes enviar el id o nombre )
+}
+````
+
+Elimina usuarios por id
+
+Método: DELETE
+
+````
+{{ localhost o dominio }}/api/app/user/2
+````
+
+Cierra la sesion del usuario
+
+Método: POST
+
+````
+{{ localhost o dominio }}/api/app/logout
+````
+
+## Comandos más usados
+
+Crea un proyecto nuevo:
+
+````
+composer create-project laravel/laravel name-app  
+````
+Levanta un servidor local en el puerto que le indiques:
+````
+php artisan serve --port=8000 o --port=8001
+````
+Crea un controlador de tipo API e importa el modelo con el cual se quiere manipular:
+````
+php artisan make:controller API/NameControllerController --api --model=User
+````
+Crea un archivo de tipo middleware, que luego tiene que ser registrado en el kernel:
+````
+php artisan make:middleware NameMiddleWareFile 
+````
+Lista todas las rutas registradas en los archivos que se encuentran en la carpeta routes:
+````
+php artisan route:list
+````
+Crea dos archivos, el modelo y su migración correspondiente:
+````
+php artisan make:model NameModel --migration
+````
+Crea un archivo que inserta las semillas a los modelos correspondientes:
+````
+php artisan make:seeder NameSeeder 
+````
+Realiza la creación, modificación e inserción de tablas y datos en la base de datos 
+````
+php artisan migrate:fresh --seed 
+````
+Actualiza las llaves de los clientes de Passport
+````
+php artisan passport:install --force 
+````
+Purga el proyecto en caso de que no se vean los cambios de configuraciones:
+````
+php artisan config:clear
+php artisan config:cache
+php artisan cache:clear
+````
+Actualiza las dependencias para su uso en el proyecto:
+````
+ composer dump-autoload
+````
+
+

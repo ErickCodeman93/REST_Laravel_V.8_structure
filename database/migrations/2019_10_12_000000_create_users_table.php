@@ -19,10 +19,12 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             // $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum( 'role', [ 'ADMIN_ROLE', 'USER_ROLE', 'VENTAS_ROLE' ] )->default( 'USER_ROLE' );
+            $table->unsignedBigInteger('role_id');
+            // $table->enum( 'role', [ 'ADMIN_ROLE', 'USER_ROLE', 'VENTAS_ROLE' ] )->default( 'USER_ROLE' );
             // $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('role_id')->references('id')->on('roles');
         });
     }
 

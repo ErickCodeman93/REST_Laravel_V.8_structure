@@ -14,7 +14,7 @@ class ShieldController extends Controller
 
     private const CLIENT_ID = 2;
 	
-	private const CLIENT_SECRET = '6erdDspjtccAX7681cxJBnqKRMtqFr551VOcxUjv';
+	private const CLIENT_SECRET = 'iqTo9sLoLMyTQvDvbUATX0Mc7qggYHYxxjVFLT8h';
     
     /**
      * Display a listing of the resource.
@@ -83,6 +83,20 @@ class ShieldController extends Controller
 
     } //end method
 
+    public function logout( Request $request ) {
+		// Revoke tokens
+		foreach( $request -> user() -> tokens ?? [] as $token ) {
+			$token -> revoke();
+		}	// end foreach
+		unset( $token );
+
+		$output = [
+			'status' => 200,
+			'message' => 'Successful operation.',
+		];
+
+        return response( $output, $output[ 'status' ] );
+	}	// end method
     /**
      * Store a newly created resource in storage.
      *

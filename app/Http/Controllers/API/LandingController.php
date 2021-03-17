@@ -33,7 +33,7 @@ class LandingController extends Controller
             $data = $request -> all();
 
             $data[ 'password' ] = bcrypt( $data[ 'password' ] );
-            $data[ 'role' ] = 'ADMIN_ROLE';
+            $data[ 'role_id' ] = 3;
 
             $user = User :: create( $data );
 
