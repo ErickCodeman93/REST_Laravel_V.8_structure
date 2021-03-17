@@ -4,7 +4,7 @@
 
 # Estructura API REST
 
-Esta es una estructura para una API REST con Laravel V.8 que contiene autenticación con OAUTH 2 para la protección de rutas, middlewares para el mejor manejo de lo que envía el cliente y existencia de registros antes de ser manipulados en controladores, CRUD de modelos, migraciones y semillas.
+Esta es una estructura para una API REST con Laravel V.8 que contiene autenticación con OAUTH 2.0 para la protección de rutas, middlewares para el mejor manejo de lo que envía el cliente y existencia de registros antes de ser manipulados en controladores, CRUD de modelos, migraciones y semillas.
 
 ## Instalación
 
@@ -39,7 +39,7 @@ private const CLIENT_SECRET = 'iqTo9sLoLM...';
 
 Nota: La estructura cuenta ya con un usuario y registros de roles en la base de datos con los cuales puedes usar el API.
 
-## Uso de la Api
+## Uso de la API
 
 Si realizaste la configuración adecuadamente puedes usar las siguientes credenciales que vienen en las semillas para interactuar con la API:
 
